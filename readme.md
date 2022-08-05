@@ -37,6 +37,10 @@ G.add_nodes_from([(n.id, dict(init_pos=n.pos)) for n in my_nodes])
 gd = GD2(G)
 ```
 
+## Requirements
+
+pytorch, networkx
+
 ## Demo
 
 random tree, 150 nodes, use stress + ideal edge length + edge orthogonality
@@ -44,4 +48,3 @@ random tree, 150 nodes, use stress + ideal edge length + edge orthogonality
 <video id="video" controls="" preload="none">
       <source id="mp4" src="./demos/stress-il-eo.mp4" type="video/mp4">
 </videos>
-
