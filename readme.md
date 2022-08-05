@@ -45,6 +45,6 @@ pytorch, networkx
 
 random tree, 150 nodes, use stress + ideal edge length + edge orthogonality
 
-<video id="video" controls="" preload="none">
-      <source id="mp4" src="./demos/stress-il-eo.mp4" type="video/mp4">
-</videos>
+
+https://user-images.githubusercontent.com/95517280/183061922-4a370915-1682-4993-b444-c316997976af.mp4
+
