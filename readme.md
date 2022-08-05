@@ -1,44 +1,47 @@
-## Installation
+# Graph Drawing via SGD
 
-### Install python3
+$(SGD)^2$ is a framework that can optimize a graph layout with any desired set of aesthetic metrics. It's full name is Scalable Graph Drawing via Stochastic Gradient Descent. The code in this repo is forked from its original author: [tiga1231/graph-drawing, branch sgd](https://github.com/tiga1231/graph-drawing/tree/sgd). The changes include:
 
-### install virtualenv
-cd to a desired dir for python venv
-virtualenv venv -p python3
-source venv/bin/activate
+- Removed all experimental code or notebook, and only keeps the core, which becomes a Python package `sgd2`.
+- Added a new visualization option, which can render an animation of the optimization progress and save it as a GIF or MP4 file.
+- Added a new aesthetic criterion: **edge orthogonality**. Its basic idea is that we hope the edges in a graph are in a group of specific directions. For example, we want the lines in a metro map to stay as vertical or horizontal as possible.
+- Allows users to set a initial layout before optimization. The layout is a set of 2d coordinates attached to graph nodes.
+- code comments in Chinese.
 
-### Install python packages
+For more information about $(SGD)^2$, see https://arxiv.org/abs/2112.01571 (TVCG 2022 paper)
 
-pip install torch 
-pip install numpy scipy sklearn pynndescent
-pip install tqdm networkx natsort
-pip install matplotlib
+## Edge Orthogonality Criterion
 
+Suppose there is an undirected edge between node P and Q. The vector from P to Q is $v$. We hope the direction of this vector $v$ is close to some specific lines, such as horizontal line or vertical line.
 
-## Download code base
+To get criterion function, first normalize $v$, then compute the product of all $||v \times e_i||$, where $\times$ is vector cross product.
 
-git clone git@github.com:tiga1231/graph-drawing.git
-cd graph-drawing
-git branch sgd
+For example, if we have $e_1 = (0, 1), e2=(1, 0)$ and normalized vector of edge $v_e=(x_e, y_e)$, then
+$$
+L_{EO}(G)=\sum_e |x_e y_e| / |E|
+$$
+where $|E|$ is the number of edges of graph $G$. Our algorithm will try to minimize this function.
 
-## Run example code
+## Initial Positions and Layout
 
-python example.py
+Before optimization, we will check whether the nodes have attribute `init_pos`. If so, set the position of nodes to the attribute values and scale those coordinates into a proper range. It guarantees that the bounding box of those positions is a square with sides of length $\sqrt{|N|}$. This scaling operation works well when optimizing large graphs.
 
+One can use `networkx` API to initialize a layout.
 
- 
-## Licence
+```python
+G = nx.Graph()
+G.add_node('a')
+G.nodes['a']['init_pos'] = (1.0, 1.0)
+# or from other data structures
+G.add_nodes_from([(n.id, dict(init_pos=n.pos)) for n in my_nodes])
+gd = GD2(G)
+```
 
-Copyright 2022 Abu Reyan Ahmed
+## Demo
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+random tree, 150 nodes, use stress + ideal edge length + edge orthogonality
 
-    http://www.apache.org/licenses/LICENSE-2.0
+<video id="video" controls="" preload="none">
+      <source id="mp4" src="./demos/stress-il-eo.mp4" type="video/mp4">
+</videos>
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
